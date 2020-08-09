@@ -1,0 +1,12 @@
+{
+	"unique_name": "sodium",
+	"display_name": "Sodium",
+	"version": "0.11",
+	"description": "Graphical performance-enhancing mod for Minecraft 1.15+",
+	"author": "JellySquid_",
+	"jar_links": [{"link": "website.com/sodium.jar", "minecraft_version": "1.16.1"}],
+	"src_link": "github.com/jellysquid_/sodium-fabric",
+	"dependencies": [
+		{"name": "Patchouli", "version": "1.1.2"}
+	]
+}
