@@ -25,6 +25,7 @@ pub async fn install_to_directory(
     version: &MojangVersionData,
     directory: &Path,
 ) -> Result<(), InstallError> {
+    cpuprofiler::PROFILER.lock().unwrap().start("./profile.profile").unwrap();
     let resource_url = url::Url::parse(RESOURCE_URL)?;
     //Need a builder for temporary files so that we don't leave half an installation
     let tmp_dir = tempfile::Builder::new().prefix("modpacker").tempdir()?;
@@ -150,6 +151,7 @@ pub async fn install_to_directory(
         }
     }
 
+    cpuprofiler::PROFILER.lock().unwrap().stop().unwrap();
     Ok(())
 }
 
@@ -171,21 +173,20 @@ struct HashData {
 }
 
 async fn download_artifact(artifact: &Artifact, lib_path: &Path) -> Result<(), InstallError> {
-    match std::fs::read(lib_path.join(artifact.path.as_ref().unwrap())) {
-        Err(_) => (),
-        Ok(bytes) => if sha1::Sha1::from(bytes).digest().to_string() == artifact.sha1 {
-            return Ok(());
-        }
-    }
 
     let mut path: Vec<&str> = artifact.path.as_ref().unwrap().split("/").collect();
 
     let file_name = path.pop().unwrap().to_string();
     let path: std::path::PathBuf = path
         .iter()
-        .scan(lib_path, |state, &x| Some(state.join(x)))
-        .collect();
+        .fold(lib_path.to_path_buf(), |acc, &x| acc.join(x));
 
+    match std::fs::read(path.join(&file_name)) {
+        Err(_) => (),
+        Ok(bytes) => if sha1::Sha1::from(bytes).digest().to_string() == artifact.sha1 {
+            return Ok(());
+        }
+    }
     std::fs::create_dir_all(&path)?;
 
     try_download_and_write(&artifact.url, &artifact.sha1, &path, &file_name, None).await?;
