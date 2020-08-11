@@ -1,6 +1,6 @@
-./target
-./assets
-./libraries
-./installations
-./profile.profile
-./Cargo.lock
+/target
+/assets
+/libraries
+/installations
+/profile.profile
+/Cargo.lock
