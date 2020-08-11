@@ -1,9 +1,7 @@
 use super::mc_data::mojang_version_data::{Artifact, MojangVersionData, Os};
-use super::types::Or;
-use phf::phf_map;
 use serde::{Deserialize, Serialize};
-use std::fs::File;
 use std::path::Path;
+use phf::phf_map;
 
 const RESOURCE_URL: &str = "https://resources.download.minecraft.net";
 static OS_MAP: phf::Map<&'static str, &'static str> = phf_map! {
@@ -25,15 +23,15 @@ pub async fn install_to_directory(
     version: &MojangVersionData,
     directory: &Path,
 ) -> Result<(), InstallError> {
-    cpuprofiler::PROFILER.lock().unwrap().start("./profile.profile").unwrap();
     let resource_url = url::Url::parse(RESOURCE_URL)?;
     //Need a builder for temporary files so that we don't leave half an installation
-    let tmp_dir = tempfile::Builder::new().prefix("modpacker").tempdir()?;
+    //let tmp_dir = tempfile::Builder::new().prefix("modpacker").tempdir()?;
     ///////////////First step: make sure assets folders exist
     let assets_path = Path::new("./assets");
     std::fs::create_dir_all(&assets_path.join("indexes"))?;
     std::fs::create_dir_all(&assets_path.join("objects"))?;
     ///////////////
+    std::fs::create_dir_all(&directory)?;
 
     let assets_filename = String::from(format!("{}{}", &version.assets, ".json"));
 
@@ -151,7 +149,23 @@ pub async fn install_to_directory(
         }
     }
 
-    cpuprofiler::PROFILER.lock().unwrap().stop().unwrap();
+    try_download_and_write(&version.downloads.client.url, 
+                           &version.downloads.client.sha1, 
+                           &directory, 
+                           &String::from("client.jar"),
+                           None).await?;
+    
+    let file = serde_json::to_string_pretty(version)?;
+    let file_path = directory.join("version_info.json");
+    let should_save_version = match std::fs::read_to_string(file_path) {
+        Err(_) => true,
+        Ok(b) => b == file
+    };
+
+    if should_save_version {
+        std::fs::write(directory.join("version_info.json"), file)?;
+    }
+
     Ok(())
 }
 

@@ -17,3 +17,10 @@ sha1 = {version = "0.6.0", features = ["std"]}
 url = {version = "2.1.1"}
 phf = {version = "0.8.0", features = ["macros"] }
 cpuprofiler = "0.0.2"
+
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1

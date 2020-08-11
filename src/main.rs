@@ -2,6 +2,7 @@ mod data;
 mod mc_data;
 mod types;
 mod downloader;
+mod launcher;
 
 extern crate serde;
 extern crate reqwest;
@@ -14,23 +15,35 @@ const VER_MANIFEST: &str = "https://launchermeta.mojang.com/mc/game/version_mani
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> { 
-    let result = reqwest::get(VER_MANIFEST)
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() != 2 {
+       println!("syntax: modpacker <version>");
+       return Ok(());
+    }
+
+    let result = Box::new(reqwest::get(VER_MANIFEST)
         .await?
         .json::<mc_data::MojangVersionManifest>()
-        .await?;
+        .await?);
     
-    let version = result.look_up_version(String::from("1.16.1")).unwrap();
+    let version = result.look_up_version(String::from(&*args[1])).unwrap();
     
     println!("downloading from {}", &version.url);
 
-    let result = reqwest::get(&version.url[..])
+    let result = Box::new(reqwest::get(&version.url[..])
         .await?
         .json::<mc_data::mojang_version_data::MojangVersionData>()
-        .await?;
+        .await?);
     
-    match downloader::install_to_directory(&result, &std::path::Path::new("./installations/")).await {
-        Err(e) => println!("{:?}", e),
-        _ => ()
+    let instance_path = std::path::Path::new("./installations").join(&*args[1]);
+
+    let download_successful = match downloader::install_to_directory(&result, &instance_path).await {
+        Err(_) => false,
+        _ => true
+    };
+    
+    if download_successful {
+        launcher::launch_instance(&instance_path);
     }
 
     Ok(())

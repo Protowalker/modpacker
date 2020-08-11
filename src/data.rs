@@ -33,9 +33,9 @@ pub struct ModJarData {
 }
 
 impl ModData {
-    pub fn from_json(json: &str) -> serde_json::Result<Self> {
-        serde_json::from_str(json)
-    }
+   // pub fn from_json(json: &str) -> serde_json::Result<Self> {
+   //     serde_json::from_str(json)
+   // }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

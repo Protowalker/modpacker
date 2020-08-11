@@ -1,0 +1,11 @@
+/home/protowalker/Code/Projects/modpacker/target/debug/deps/getrandom-77acfbb4bb0089aa.rmeta: /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/lib.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/error.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/util.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/use_file.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/util_libc.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/error_impls.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/linux_android.rs
+
+/home/protowalker/Code/Projects/modpacker/target/debug/deps/getrandom-77acfbb4bb0089aa.d: /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/lib.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/error.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/util.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/use_file.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/util_libc.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/error_impls.rs /home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/linux_android.rs
+
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/lib.rs:
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/error.rs:
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/util.rs:
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/use_file.rs:
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/util_libc.rs:
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/error_impls.rs:
+/home/protowalker/.cargo/registry/src/github.com-1ecc6299db9ec823/getrandom-0.1.14/src/linux_android.rs:

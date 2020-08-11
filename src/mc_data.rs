@@ -58,14 +58,14 @@ pub mod mojang_version_data {
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Arguments {
-        game: Vec<Or<String, Argument>>,
-        jvm: Vec<Or<String, Argument>>,
+        pub game: Vec<Or<String, Argument>>,
+        pub jvm: Vec<Or<String, Argument>>,
     }
 
     #[derive(Serialize, Deserialize, Debug)]
     pub struct Argument {
-        rules: Option<Vec<Rule>>,
-        value: OrVec<String>,
+        pub rules: Option<Vec<Rule>>,
+        pub value: OrVec<String>,
     }
 
     #[derive(Serialize, Deserialize, Debug)]
