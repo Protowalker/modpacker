@@ -1,1 +1,0 @@
-{"rustc":15479600521011547909,"features":"","target":0,"profile":0,"path":0,"deps":[[14627897259426038075,"build_script_build",false,13605234247090064916],[7745376270869067363,"build_script_build",false,3493338518185867910]],"local":[{"RerunIfChanged":{"output":"debug/build/backtrace-2bfe6d810e020ddf/output","paths":["src/capture.rs"]}}],"rustflags":[],"metadata":0}
