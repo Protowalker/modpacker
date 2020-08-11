@@ -1,0 +1,6 @@
+./target
+./assets
+./libraries
+./installations
+./profile.profile
+./Cargo.lock
