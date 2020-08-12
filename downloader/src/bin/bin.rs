@@ -1,15 +1,11 @@
-mod data;
-mod launcher;
-
 extern crate serde;
 extern crate reqwest;
 extern crate tokio;
-extern crate tempfile;
 extern crate sha1;
-extern crate cpuprofiler;
+extern crate url;
 extern crate downloader;
 
-use downloader::{download, mc_data};
+use downloader::{mc_data, download};
 
 const VER_MANIFEST: &str = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
 
@@ -43,10 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     
     if download_successful {
-        match launcher::launch_instance(&instance_path) {
-            Ok(_) => (),
-            Err(e) => println!("{:#?}", e)
-        }
+        //launcher::launch_instance(&instance_path);
     }
 
     Ok(())

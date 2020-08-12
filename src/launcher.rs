@@ -1,6 +1,6 @@
 use super::mc_data::mojang_version_data::MojangVersionData;
 
-
+#[derive(Debug)]
 pub enum LaunchError {
     IOError(std::io::Error),
     JSONError(serde_json::Error)
@@ -14,6 +14,7 @@ pub fn launch_instance(instance_dir: &std::path::Path) -> Result<(), LaunchError
        Some(args.jvm)
     } else { None };
 
+    let libraries = version_data.libraries;
     Ok(())
 }
 

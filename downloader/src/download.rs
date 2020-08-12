@@ -127,6 +127,8 @@ pub async fn install_to_directory(
                     }
                 }
             }
+        } else {
+            should_download_artifact = true;
         }
         //if there's an artifact, download it
         if should_download_artifact {
