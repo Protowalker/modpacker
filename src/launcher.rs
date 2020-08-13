@@ -3,6 +3,7 @@ use std::path::Path;
 use std::ffi::{OsStr, OsString};
 use std::process::Command;
 use path_clean::{PathClean};
+use rayon::prelude::*;
 
 #[derive(Debug)]
 pub enum LaunchError {
@@ -31,9 +32,11 @@ pub fn launch_instance(instance_dir: &std::path::Path) -> Result<(), LaunchError
     logging_string.replace_range(offset.., &instance_dir.join("client.xml").to_string_lossy());
     args.push(OsStr::new(&logging_string));
 
-    let mut natives_path = OsString::from("-Djava.libaries.path=");
-    natives_path.push(get_absolute_path(std::path::Path::new("./RESOURCES"))?);
-    args.push(&*natives_path);
+    let natives_path = &instance_dir.join("natives");
+    std::fs::create_dir_all(natives_path)?;
+    let mut natives_path_arg = OsString::from("-Djava.libaries.path=");
+    natives_path_arg.push(natives_path.clone().into_os_string());
+    args.push(&*natives_path_arg);
 
     //if let Some(args) = java_arguments {
     //    args.iter().for_each(|arg| args.push());
@@ -41,17 +44,38 @@ pub fn launch_instance(instance_dir: &std::path::Path) -> Result<(), LaunchError
 
 
     let lib_dir = &get_absolute_path(Path::new("./libraries"))?;
-    let lib_artifacts = downloader::download::get_needed_libraries(&version_data);
+    let (mut lib_artifacts, nat_artifacts) = downloader::download::get_needed_libraries(&version_data);
+    lib_artifacts.append(&mut nat_artifacts.clone());
+
+
+    nat_artifacts.par_iter()
+        .for_each(|nat| {
+            let file = std::fs::File::open(lib_dir.join(nat.path.clone().unwrap())).unwrap();
+            let mut jar = zip::ZipArchive::new(file).unwrap();
+
+            for i in 0..jar.len() {
+                let mut file = jar.by_index(i).unwrap();
+                println!("{}", file.name());
+                if !file.name().contains("META-INF/") {
+                    let path = file.sanitized_name();
+                    std::fs::create_dir_all(&path).unwrap();
+                    let mut out = std::fs::File::create(natives_path.join(file.name())).unwrap();
+                    std::io::copy(&mut file, &mut out).unwrap();
+                }
+            }
+
+        });
+
     let lib_paths: Vec<OsString> = lib_artifacts.iter()
                                  .map(|lib| 
-                                      lib_dir.join(lib.path
-                                                               .clone()
-                                                               .unwrap())
+                                      lib_dir.join(lib.path.clone()
+                                                           .unwrap())
                                       .into_os_string())
                                  .collect();
 
     let lib_paths = lib_paths.iter();
-
+    
+    
     args.push(OsStr::new("-cp"));
     let mut lib_string = OsString::new();
     lib_paths.for_each(|cur| { lib_string.push(cur); lib_string.push(OsStr::new(":"));}); 
