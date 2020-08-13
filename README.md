@@ -15,7 +15,7 @@ launcher and data format for the distribution and installation of minecraft
 ## Roadmap
 - [x] Download and parse Minecraft assets from Mojang's servers
 - [x] Launch said Minecraft installation
-- [x] Create isolated Java installs (and allow for selection of java version)
+- [ ] Create isolated Java installs (and allow for selection of java version)
 	- Should default to Java 8 for 1.12.2 and older, latest LTS for everything else
 - [ ] Download and parse modloaders (plus extensibility for others)
 	- [ ] Fabric
