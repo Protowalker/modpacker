@@ -57,7 +57,9 @@ pub fn launch_instance(instance_dir: &std::path::Path) -> Result<(), LaunchError
                 let mut file = jar.by_index(i).unwrap();
                 println!("{}", file.name());
                 if !file.name().contains("META-INF/") {
-                    let path = file.sanitized_name();
+                    let mut path = file.sanitized_name().clone();
+                    path.pop();
+                    let path = natives_path.join(path);
                     std::fs::create_dir_all(&path).unwrap();
                     let mut out = std::fs::File::create(natives_path.join(file.name())).unwrap();
                     std::io::copy(&mut file, &mut out).unwrap();
