@@ -15,6 +15,9 @@ tempfile = "3.1.0"
 sha1 = {version = "0.6.0", features = ["std"]}
 url = {version = "2.1.1"}
 cpuprofiler = "0.0.2"
+itertools = "0.9"
+path-clean = "0.1.0"
+
 downloader = {path = "downloader"}
 
 [profile.dev.package."*"]

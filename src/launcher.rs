@@ -1,4 +1,8 @@
-use super::mc_data::mojang_version_data::MojangVersionData;
+use super::mc_data::mojang_version_data::{Arguments, MojangVersionData};
+use std::path::Path;
+use std::ffi::{OsStr, OsString};
+use std::process::Command;
+use path_clean::{PathClean};
 
 #[derive(Debug)]
 pub enum LaunchError {
@@ -10,14 +14,91 @@ pub fn launch_instance(instance_dir: &std::path::Path) -> Result<(), LaunchError
     let version_data = std::fs::read_to_string(&instance_dir.join("version_info.json"))?;
     let version_data: MojangVersionData = serde_json::from_str(&version_data[..])?;
 
-    let java_arguments = if let Some(args) = version_data.arguments {
-       Some(args.jvm)
+    let _java_arguments = if let Some(Arguments {jvm, ..}) = version_data.arguments.clone() {
+       Some(jvm)
     } else { None };
 
-    let libraries = version_data.libraries;
+    let mut args: Vec<&OsStr> = vec![ 
+                                        OsStr::new("-Xms512m"),
+                                        OsStr::new("-Xmx2048m"),
+                                        OsStr::new("-Duser.language=en"),
+                                    ];
+
+    let instance_dir = get_absolute_path(instance_dir)?;
+
+    let mut logging_string = version_data.logging.client.argument.clone();
+    let offset = logging_string.find('$').unwrap();
+    logging_string.replace_range(offset.., &instance_dir.join("client.xml").to_string_lossy());
+    args.push(OsStr::new(&logging_string));
+
+    let mut natives_path = OsString::from("-Djava.libaries.path=");
+    natives_path.push(get_absolute_path(std::path::Path::new("./RESOURCES"))?);
+    args.push(&*natives_path);
+
+    //if let Some(args) = java_arguments {
+    //    args.iter().for_each(|arg| args.push());
+    //}
+
+
+    let lib_dir = &get_absolute_path(Path::new("./libraries"))?;
+    let lib_artifacts = downloader::download::get_needed_libraries(&version_data);
+    let lib_paths: Vec<OsString> = lib_artifacts.iter()
+                                 .map(|lib| 
+                                      lib_dir.join(lib.path
+                                                               .clone()
+                                                               .unwrap())
+                                      .into_os_string())
+                                 .collect();
+
+    let lib_paths = lib_paths.iter();
+
+    args.push(OsStr::new("-cp"));
+    let mut lib_string = OsString::new();
+    lib_paths.for_each(|cur| { lib_string.push(cur); lib_string.push(OsStr::new(":"));}); 
+
+    lib_string.push(instance_dir.join("client.jar"));
+
+    args.push(&*lib_string);
+    
+    args.push(OsStr::new("net.minecraft.client.main.Main"));
+
+    let game_dir = instance_dir.join("minecraft");
+    args.push(OsStr::new("--gameDir"));
+    args.push(game_dir.as_os_str());
+
+    let assets_dir = get_absolute_path(std::path::Path::new("./assets"))?;
+    args.push(OsStr::new("--assetsDir"));
+    args.push(assets_dir.as_os_str());
+
+    args.push(OsStr::new("--assetIndex"));
+    args.push(OsStr::new(&version_data.assets));
+
+    args.push(OsStr::new("--version"));
+    args.push(OsStr::new(&version_data.id));
+    
+    args.push(OsStr::new("--accessToken"));
+    args.push(OsStr::new("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhMmY1YTA1OTMxYzY0NDNmOGRmZTJjNTlkYTFkNTQ0ZSIsInlnZ3QiOiJjNWVlYTU5MWZkZWY0MTBlYjIxMmIxMzAzYWFkY2Q4MCIsInNwciI6IjM5MTdkZDczNjc3ZDQzOTg5YTBhYWJlY2Y2NDBjOGI5IiwiaXNzIjoiWWdnZHJhc2lsLUF1dGgiLCJleHAiOjE1OTc0Mzc5OTcsImlhdCI6MTU5NzI2NTE5N30.124RZjpyn2u1IQ1qVQXMGYBO_OZh0L0kdL9KPoT48L0"));
+
+    println!("{:#?}", args);
+
+    let output = Command::new("java")
+             .args(args)
+             .output()?;
+    
+    println!("{:?}", output);
+
     Ok(())
 }
 
+fn get_absolute_path<P: AsRef<Path>>(path: P) -> std::io::Result<std::path::PathBuf> {
+    let path = path.as_ref();
+    let absolute_path = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        std::env::current_dir()?.join(path)
+    }.clean();
+    Ok(absolute_path)
+}
 
 impl From<std::io::Error> for LaunchError {
     fn from(error: std::io::Error) -> LaunchError {
@@ -30,3 +111,4 @@ impl From<serde_json::Error> for LaunchError {
         LaunchError::JSONError(error)
     }
 }
+
