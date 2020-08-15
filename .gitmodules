@@ -1,3 +1,6 @@
 [submodule "MP-Downloader"]
 	path = downloader
 	url = https://github.com/Protowalker/MP-Downloader.git
+[submodule "downloader"]
+	path = downloader
+	url = https://github.com/Protowalker/MP-Downloader.git
