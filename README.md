@@ -1,5 +1,5 @@
 # Modpacker
-launcher and data format for the distribution and installation of minecraft
+launcher and data format for the distribution and installation of minecraft.
 
 ------------
 ## Goals
